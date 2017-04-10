@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
+    <link rel="stylesheet" href=" {{ url_for('static', filename='css/main.css') }}">
   </head>
 
   <body>
@@ -21,13 +21,26 @@
     <nav class="navbar">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="/">{{ name }} <span class="badge">{{ posts_count }}</span></a>
+          <a class="navbar-brand" onclick="togglePosts()" >{{ name }} <span class="badge">{{ posts_count }}</span></a>
         </div>
       </div>
     </nav>
 
+    <div class="container" id="posts" style="display: none;">
+    {% for post in posts %}
+    <div class="row post">
+
+                    <div class="col-md-12"><a id="header-{{ post.id }}">{{ post.title  }}</a> <span><a href="{{ post.url }}"
+                    >{{ post.url }}</a></span> <span class="label label-as-bage label-primary"
+                     onclick="editPost({{ post.id }})">Редактировать</span></div>
+
+        </div>
+
+     {% endfor %}
+    </div>
+
     <div class="container">
-      <form method="POST" action="/post">
+      <form method="POST">
         <div class="form-group">
           <input name="header" class="form-control" placeholder="Заголовок" autofocus/>
         </div>
@@ -38,10 +51,66 @@
           <textarea name="body" class="form-control" rows="10" placeholder="Ваша история"></textarea>
         </div>
         <div class="form-group">
-          <button class="btn btn-primary" type="submit">Опубликовать</button>
+          <button onclick="publish()" class="btn btn-primary" type="submit">Опубликовать</button>
         </div>
+          <textarea hidden name="id"></textarea>
       </form>
     </div><!-- /.container -->
+
+    <script>
+
+
+    function publish() {
+        $.ajax({
+            url: '/post',
+            data: $('form').serialize(),
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                document.cookie="userID=" + response['user_id'];
+                $("#name").val(response["name"]);
+                $("#postsCount").val(response["posts_count"])
+
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        })
+
+    }
+
+    function togglePosts() {
+        $("#posts").toggle("slow");
+
+    }
+
+    function editPost(id) {
+       $("#posts").hide();
+       $("#submit").hide();
+       $("#edit").show();
+       $.ajax({
+            url: '/post',
+            data: { 'id' : id },
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                $("#name").val(response["name"]);
+                $("#postsCount").val(response["posts_count"]);
+                $("[name=header]").val(response["title"]);
+                $("[name=body]").val(response["history"]);
+                $("[name=signature]").val(response["name"]);
+                $("[name=id]").val(response["post_id"])
+
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        })
+
+
+    }
+
+    </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
