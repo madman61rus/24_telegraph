@@ -25,6 +25,19 @@ def index():
 
     return render_template('form.html',name=name,posts_count=posts_count,posts = posts)
 
+@app.route('/edit',methods=['GET'])
+def edit():
+    user_id = request.cookies.get('userID')
+    request.form.get('post_id')
+
+    if request.form.get('post_id') and user_id:
+        post = Post.query.filter_by(id=request.form.get("post_id")).first()
+        post.history = request.form["body"]
+        post.title = request.form["header"]
+        post.user_id = user_id
+
+        db.session.commit()
+
 @app.route('/post',methods=['POST','GET'])
 def post():
     user_id = request.cookies.get('userID')
@@ -46,11 +59,7 @@ def post():
             posts_count=posts_count,
             post_id=post_id)
 
-    if request.form.get('id') and user_id :
-        post = Post.query.filter_by(id=request.form.get("id")).first()
-        post.history = request.form["body"]
-        post.title = request.form["header"]
-        post.user_id = user_id
+
 
 
     if not user_id :
@@ -71,7 +80,6 @@ def post():
     redirect_to_index = redirect('/')
     response = make_response(redirect_to_index)
     response.set_cookie('userID',value=str(user_id))
-
 
     db.session.commit()
 

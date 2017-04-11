@@ -13,7 +13,8 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-    <link rel="stylesheet" href=" {{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   </head>
 
   <body>
@@ -21,7 +22,7 @@
     <nav class="navbar">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" onclick="togglePosts()" >{{ name }} <span class="badge">{{ posts_count }}</span></a>
+            <a class="navbar-brand" onclick="togglePosts()" >{{ name }} <span class="badge"> {{ posts_count }}</span></a>
         </div>
       </div>
     </nav>
@@ -30,9 +31,8 @@
     {% for post in posts %}
     <div class="row post">
 
-                    <div class="col-md-12"><a id="header-{{ post.id }}">{{ post.title  }}</a> <span><a href="{{ post.url }}"
-                    >{{ post.url }}</a></span> <span class="label label-as-bage label-primary"
-                     onclick="editPost({{ post.id }})">Редактировать</span></div>
+                    <div class="col-md-12">Запись: <a id="header-{{ post.id }}">{{ post.title  }}</a> <span>Ссылка: <a href="{{ post.url }}"
+                    >{{ post.url }}</a></span> <a onclick="editPost({{post.id}})">Редактировать</a></div>
 
         </div>
 
@@ -53,7 +53,7 @@
         <div class="form-group">
           <button onclick="publish()" class="btn btn-primary" type="submit">Опубликовать</button>
         </div>
-          <textarea hidden name="id"></textarea>
+          <textarea hidden name="post_id"></textarea>
       </form>
     </div><!-- /.container -->
 
@@ -99,7 +99,7 @@
                 $("[name=header]").val(response["title"]);
                 $("[name=body]").val(response["history"]);
                 $("[name=signature]").val(response["name"]);
-                $("[name=id]").val(response["post_id"])
+                $("[name=post_id]").val(response["post_id"])
 
             },
             error: function(error) {

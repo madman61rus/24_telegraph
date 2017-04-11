@@ -2,4 +2,8 @@
     margin-bottom: 10px;
 }
 
+a .navbar-brand {
+    cursor: pointer;
+}
+
 
